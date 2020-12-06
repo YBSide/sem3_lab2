@@ -70,4 +70,12 @@ public:
             cout << data->get(i).word << "| page:" << data->get(i).page << endl;
         }
     }
+
+    string get_word(int index) {
+        return data->get(index).word;
+    }
+
+    int get_page(int index) {
+        return data->get(index).page;
+    }
 };

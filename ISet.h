@@ -43,7 +43,7 @@ public:
             if (element == data->get(i))
                 return data->get(i);
         }
-        throw my_exception();
+        throw out_of_range("Oops");
     }
 
     bool find(T element) {

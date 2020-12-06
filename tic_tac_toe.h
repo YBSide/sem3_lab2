@@ -74,6 +74,7 @@ public:
     }
 
     bool it_is_win(string symbol) {
+
         for (char i : "abc") {
             string j = string(1, i);
             if (int(i) == 0)

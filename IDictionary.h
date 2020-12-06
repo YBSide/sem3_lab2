@@ -21,16 +21,27 @@ class dict {
     };
 
 private:
-    element_in_hash hash_arr[MAX_S]; // 30 == max size of a table
+    element_in_hash* hash_arr; // 30 == max size of a table
     int count = 0;
-    int capacity = MAX_S;
+    int capacity;
+
+public:
+    explicit dict(int size) {
+        hash_arr = new element_in_hash[size];
+        capacity = size;
+    }
+
+    dict() {
+        hash_arr = new element_in_hash[30];
+        capacity = 30;
+    }
 
 public:
     int return_hash(string data) {
         unsigned long hash = 5381;
         for (char i : data)
             hash = 33 * hash + (unsigned char)i;
-        return hash % MAX_S;
+        return hash % capacity;
     }
 
     void add(Tkey key, Tvalue value) {
