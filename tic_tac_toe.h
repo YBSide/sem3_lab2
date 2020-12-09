@@ -5,9 +5,12 @@
 #include "IDictionary.h"
 #include <cstring>
 #include <utility>
+#include <random>
 
 using namespace std;
-
+random_device rd;
+mt19937 gen(rd());
+discrete_distribution<> d({1, 99});
 class tic_tac_toe {
 
 private:
@@ -34,36 +37,38 @@ public:
     }
 
     void initialize_field() {
-        field.add("a1", " ");
-        field.add("b1", " ");
-        field.add("c1", " ");
-        field.add("a2", " ");
-        field.add("b2", " ");
-        field.add("c2", " ");
-        field.add("a3", " ");
-        field.add("b3", " ");
-        field.add("c3", " ");
-    }
-
-    void show_filed() {
-        cout << "    1 | " << "2 | " << "3" << endl;
-        for (char i : "abc") {
+        for (char i : "abcde") {
             string j = string(1, i);
             if (int(i) == 0)
                 break;
-            cout << j << " | " << field.get(j+"1") << " | " << field.get(j+"2") << " | " << field.get(j+"3") << endl;
+            for(char k : "12345") {
+                if (int(k) == 0)
+                    break;
+                field.add(j+k, " ");
+            }
+        }
+    }
+
+    void show_filed() {
+        cout << "    1 | " << "2 | " << "3 | " << "4 | " << "5 | " << endl;
+        for (char i : "abcde") {
+            string j = string(1, i);
+            if (int(i) == 0)
+                break;
+            cout << j << " | " << field.get(j+"1") << " | " << field.get(j+"2") << " | " << field.get(j+"3") <<
+            " | " << field.get(j+"4") << " | " << field.get(j+"5") <<  " |"<< endl;
 
         }
 
     }
 
     bool it_is_draw() {
-        for (char i : "abc") {
+        for (char i : "abcde") {
             string j = string(1, i);
             if (int(i) == 0)
                 break;
 
-            for(char k : "123") {
+            for(char k : "12345") {
                 if (int(k) == 0)
                     break;
                 if (field.get(j+k) == " ")
@@ -75,27 +80,31 @@ public:
 
     bool it_is_win(string symbol) {
 
-        for (char i : "abc") {
+        for (char i : "abcde") {
             string j = string(1, i);
             if (int(i) == 0)
                 break;
-            if (field.get(j+"1") == field.get(j+"2") && field.get(j+"3") == symbol && field.get(j+"1") == symbol)
+            if (field.get(j+"1") == symbol && field.get(j+"2") == symbol && field.get(j+"3") == symbol
+            && field.get(j+"4") == symbol && field.get(j+"5") == symbol)
                 return true;
         }
 
-        for (char i : "123") {
+        for (char i : "12345") {
             string j = string(1, i);
             if (int(i) == 0)
                 break;
-            if (field.get("a"+j) == field.get("b"+j) && field.get("c"+j) == symbol && field.get("a"+j) == symbol)
+            if (field.get("b"+j) == symbol && field.get("c"+j) == symbol && field.get("a"+j) == symbol
+            && field.get("d"+j) == symbol && field.get("e"+j) == symbol)
                 return true;
         }
 
-        return (field.get("a1") == field.get("b2") && field.get("c3") == symbol && field.get("a1") == symbol) ||
-               (field.get("c1") == field.get("b2") && field.get("a3") == symbol && field.get("c1") == symbol);
+        return ((field.get("b2") == symbol && field.get("c3") == symbol && field.get("a1") == symbol) &&
+               (field.get("d4") == symbol && field.get("e5") == symbol)) ||
+                ((field.get("e1") == symbol && field.get("d2") == symbol && field.get("c3") == symbol) &&
+                (field.get("b4") == symbol && field.get("a5") == symbol));
     }
 
-    int minimax(bool it_is_ai_turn) {
+    int minimax(bool it_is_ai_turn, int depth) {
         if (it_is_win(computer_character))
             return -10;
         if (it_is_win(player_character))
@@ -107,12 +116,12 @@ public:
         int best_score_for_person = -10;
         int score;
 
-        for (char i : "abc") {
+        for (char i : "abcde") {
 
             if (int(i) == 0)
                 break;
 
-            for (char j : "123") {
+            for (char j : "12345") {
 
                 if (int(j) == 0)
                     break;
@@ -125,15 +134,29 @@ public:
                     else
                         field.add(i+k, player_character);
 
-                    score = minimax(!it_is_ai_turn);
+                    score = minimax(!it_is_ai_turn, depth - 1);
                     field.add(i+k, " ");
 
                     if (it_is_ai_turn && score <= best_score_for_ai)
                         best_score_for_ai = score;
                     if (!it_is_ai_turn && score >= best_score_for_person)
                         best_score_for_ai = score;
-                    if ((it_is_ai_turn && score == -10) || (!it_is_ai_turn && score == 10))
+                    if ((it_is_ai_turn && score == -10) || (!it_is_ai_turn && score == 10) || (it_is_ai_turn && score == 0)) {
                         return score;
+                    }
+                    if ((d(gen) == 0 && score == 0) || depth <= 0) {
+                        return score;
+                    }
+                    /*
+                    if (score == 0) {
+                        for (int ind=0; ind < 1500; ind++) {
+                            if (count == ind) {
+                                count += 1;
+                                return score;
+                            }
+                        }
+                    }
+                    */
 
                 }
             }
@@ -147,13 +170,14 @@ public:
     void computer_turn() {
         int best_score = 10;
         int score;
+        int count = 0;
         string position;
-        for (char i : "abc") {
+        for (char i : "abcde") {
 
             if (int(i) == 0)
                 break;
 
-            for (char j : "123") {
+            for (char j : "12345") {
 
                 if (int(j) == 0)
                     break;
@@ -161,17 +185,14 @@ public:
 
                 if (field.get(i+k) == " ") {
                     field.add(i+k, computer_character);
-                    score = minimax(false);
+                    score = minimax(false, 3);
                     field.add(i+k, " ");
                     if (score < best_score) {
-                        best_score = score;
+                        //best_score = score;
                         position = i+k;
+                        field.add(position, computer_character);
+                        return;
                     }
-                }
-
-                if (best_score == -10) {
-                    field.add(position, computer_character);
-                    return;
                 }
             }
         }

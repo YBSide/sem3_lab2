@@ -2,7 +2,6 @@
 
 #include <iostream>
 #include <exception>
-#define MAX_S 30
 using namespace std;
 
 struct my_exception : public exception {
@@ -21,7 +20,7 @@ class dict {
     };
 
 private:
-    element_in_hash* hash_arr; // 30 == max size of a table
+    element_in_hash* hash_arr;
     int count = 0;
     int capacity;
 
@@ -32,8 +31,8 @@ public:
     }
 
     dict() {
-        hash_arr = new element_in_hash[30];
-        capacity = 30;
+        hash_arr = new element_in_hash[40];
+        capacity = 40;
     }
 
 public:
