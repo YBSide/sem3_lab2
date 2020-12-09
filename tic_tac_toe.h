@@ -147,17 +147,6 @@ public:
                     if ((d(gen) == 0 && score == 0) || depth <= 0) {
                         return score;
                     }
-                    /*
-                    if (score == 0) {
-                        for (int ind=0; ind < 1500; ind++) {
-                            if (count == ind) {
-                                count += 1;
-                                return score;
-                            }
-                        }
-                    }
-                    */
-
                 }
             }
         }
